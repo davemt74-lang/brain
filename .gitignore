@@ -1,0 +1,4 @@
+scanner/config.php
+scanner/data/marks.json
+scanner/data/uploads/*
+!scanner/data/uploads/.gitkeep
