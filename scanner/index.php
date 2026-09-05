@@ -14,7 +14,7 @@ if (!scanner_is_installed()) {
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#081518">
   <title>Scan a Mark · Vacation Brain</title>
-  <link rel="stylesheet" href="assets/app.css">
+  <link rel="stylesheet" href="assets/app.css?v=20260904-2">
 </head>
 <body class="scanner-body">
   <main class="scanner-shell">
@@ -52,16 +52,16 @@ if (!scanner_is_installed()) {
     </section>
 
     <section class="scanner-controls" aria-label="Scanner controls">
-      <div class="engine-status"><span class="status-dot" data-engine-dot></span><span data-engine-status>Loading recognition engine…</span></div>
+      <div class="engine-status"><span class="status-dot" data-engine-dot></span><span data-engine-status>Loading registered marks…</span></div>
       <div class="control-row">
         <label class="round-control" title="Use a photo">
           <input class="sr-only" type="file" accept="image/*" capture="environment" data-photo-input>
           <span aria-hidden="true">＋</span><small>Photo</small>
         </label>
-        <button class="scan-button" type="button" data-scan disabled><span></span><b>Scan</b></button>
+        <button class="scan-button" type="button" data-scan><span></span><b>Scan</b></button>
         <button class="round-control" type="button" data-camera-toggle><span aria-hidden="true">◉</span><small>Camera</small></button>
       </div>
-      <p class="scanner-message" role="status" aria-live="polite" data-message>Starting camera and loading registered marks…</p>
+      <p class="scanner-message" role="status" aria-live="polite" data-message>Starting camera…</p>
     </section>
   </main>
 
@@ -72,7 +72,6 @@ if (!scanner_is_installed()) {
     };
   </script>
   <script async src="https://docs.opencv.org/4.13.0/opencv.js"></script>
-  <script src="assets/scanner.js" defer></script>
-  <script src="assets/camera-autostart.js" defer></script>
+  <script src="assets/scanner.js?v=20260904-2" defer></script>
 </body>
 </html>
