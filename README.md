@@ -2,7 +2,7 @@
 
 Vacation Brain is a vintage coastal lifestyle and apparel brand site.
 
-The current build is a lightweight static storefront-ready front end with no framework dependency.
+The storefront remains a lightweight, framework-free front end. The repository now also includes a small PHP-based registered-mark scanner under `/scanner/` so a physical brand mark can resolve to an in-app brand landing page.
 
 ## Current homepage
 
@@ -16,7 +16,22 @@ The current build is a lightweight static storefront-ready front end with no fra
 - Lightweight add-to-cart feedback
 - Reduced-motion support and accessible focus states
 
-## Run locally
+## Registered Mark Scanner
+
+The v1 scanner provides the complete minimal flow:
+
+1. One-time install and admin key
+2. Register brand name + mark image + in-app landing path
+3. Open a mobile camera scanner
+4. Center the physical mark in the reticle
+5. Match ORB features with geometric consistency in the browser
+6. Redirect a confident match to the registered in-app landing page
+
+Camera frames are processed locally in the browser and are not uploaded during recognition.
+
+See [`scanner/README.md`](scanner/README.md) for deployment and testing details.
+
+## Run the storefront locally
 
 Open `index.html` directly or serve the repository with any static file server.
 
@@ -24,7 +39,17 @@ Open `index.html` directly or serve the repository with any static file server.
 python -m http.server 8000
 ```
 
-Then open `http://localhost:8000`.
+## Run the scanner locally
+
+The scanner needs PHP:
+
+```bash
+php -S 127.0.0.1:8000
+```
+
+Then visit `http://127.0.0.1:8000/scanner/install.php`.
+
+Production camera access requires HTTPS.
 
 ## Brand palette
 
@@ -33,7 +58,7 @@ Then open `http://localhost:8000`.
 - Sunset Rust: `#C74F30`
 - Warm Cream: `#F5EFE5`
 
-## Next phases
+## Next storefront phases
 
 1. Real product-detail pages and size / color variants
 2. Cart drawer and checkout integration
