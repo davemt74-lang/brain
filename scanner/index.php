@@ -32,8 +32,8 @@ if (!scanner_is_installed()) {
       <canvas data-capture-canvas hidden></canvas>
       <div class="camera-placeholder" data-placeholder>
         <span class="camera-glyph" aria-hidden="true">◎</span>
-        <strong>Camera ready when you are.</strong>
-        <small>Camera access requires HTTPS or localhost.</small>
+        <strong>Starting camera…</strong>
+        <small>Allow camera access when your browser asks.</small>
       </div>
 
       <div class="scan-reticle" aria-hidden="true">
@@ -61,7 +61,7 @@ if (!scanner_is_installed()) {
         <button class="scan-button" type="button" data-scan disabled><span></span><b>Scan</b></button>
         <button class="round-control" type="button" data-camera-toggle><span aria-hidden="true">◉</span><small>Camera</small></button>
       </div>
-      <p class="scanner-message" role="status" aria-live="polite" data-message>Loading registered marks…</p>
+      <p class="scanner-message" role="status" aria-live="polite" data-message>Starting camera and loading registered marks…</p>
     </section>
   </main>
 
@@ -73,5 +73,6 @@ if (!scanner_is_installed()) {
   </script>
   <script async src="https://docs.opencv.org/4.13.0/opencv.js"></script>
   <script src="assets/scanner.js" defer></script>
+  <script src="assets/camera-autostart.js" defer></script>
 </body>
 </html>

@@ -21,6 +21,9 @@ jobs:
         run: |
           node --check scanner/assets/register.js
           node --check scanner/assets/scanner.js
+          node --check scanner/assets/camera-autostart.js
+      - name: Scanner page wiring
+        run: grep -q 'camera-autostart.js' scanner/index.php
       - name: Runtime files are not committed
         run: |
           test ! -f scanner/config.php
