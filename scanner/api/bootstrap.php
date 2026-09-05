@@ -94,6 +94,21 @@ function scanner_clean_name(string $value): string
     return substr($value, 0, 100);
 }
 
+function scanner_current_host(): string
+{
+    $host = trim((string)($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? ''));
+    if ($host === '') {
+        return '';
+    }
+
+    if (str_starts_with($host, '[')) {
+        $closing = strpos($host, ']');
+        return $closing === false ? strtolower($host) : strtolower(substr($host, 0, $closing + 1));
+    }
+
+    return strtolower(explode(':', $host, 2)[0]);
+}
+
 function scanner_local_landing(string $value, string $slug): string
 {
     $value = trim($value);
@@ -102,19 +117,58 @@ function scanner_local_landing(string $value, string $slug): string
         return ($base === '' ? '/scanner' : $base) . '/brand.php?slug=' . rawurlencode($slug);
     }
 
-    if (str_contains($value, "\0") || preg_match('/^[a-z][a-z0-9+.-]*:/i', $value) || str_starts_with($value, '//')) {
-        throw new InvalidArgumentException('Landing page must be an in-app path, not an external URL.');
-    }
-
-    if (!str_starts_with($value, '/') && !preg_match('/^[A-Za-z0-9._~\/?#=&%+-]+$/', $value)) {
+    if (strlen($value) > 500 || preg_match('/[\x00-\x1F\x7F]/', $value)) {
         throw new InvalidArgumentException('Landing page contains unsupported characters.');
     }
 
-    if (str_contains($value, '..')) {
-        throw new InvalidArgumentException('Landing page cannot traverse parent directories.');
+    if (str_starts_with($value, '//')) {
+        throw new InvalidArgumentException('Landing page must stay inside this app.');
     }
 
-    return substr($value, 0, 500);
+    $parts = parse_url($value);
+    if ($parts === false) {
+        throw new InvalidArgumentException('Landing page is not a valid URL or app path.');
+    }
+
+    if (isset($parts['scheme'])) {
+        $scheme = strtolower((string)$parts['scheme']);
+        if (!in_array($scheme, ['http', 'https'], true)) {
+            throw new InvalidArgumentException('Landing page must be a web URL or in-app path.');
+        }
+
+        $targetHost = strtolower((string)($parts['host'] ?? ''));
+        $currentHost = scanner_current_host();
+        if ($targetHost === '' || $currentHost === '' || !hash_equals($currentHost, $targetHost)) {
+            throw new InvalidArgumentException('Landing page must be on this same website.');
+        }
+
+        $value = (string)($parts['path'] ?? '/');
+        if ($value === '') {
+            $value = '/';
+        }
+        if (isset($parts['query'])) {
+            $value .= '?' . $parts['query'];
+        }
+        if (isset($parts['fragment'])) {
+            $value .= '#' . $parts['fragment'];
+        }
+    } elseif (!str_starts_with($value, '/')) {
+        $value = '/' . ltrim($value, '/');
+    }
+
+    $path = (string)(parse_url($value, PHP_URL_PATH) ?? '');
+    $decodedPath = rawurldecode($path);
+    if (str_contains($decodedPath, '\\')) {
+        throw new InvalidArgumentException('Landing page path cannot contain backslashes.');
+    }
+
+    foreach (explode('/', $decodedPath) as $segment) {
+        if ($segment === '..') {
+            throw new InvalidArgumentException('Landing page cannot traverse parent directories.');
+        }
+    }
+
+    return $value;
 }
 
 function scanner_require_admin_key(): void

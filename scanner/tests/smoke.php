@@ -13,11 +13,14 @@ function expect(bool $condition, string $message): void
 }
 
 $_SERVER['SCRIPT_NAME'] = '/scanner/api/register.php';
+$_SERVER['HTTP_HOST'] = 'brain.example.com';
 
 expect(scanner_slug(' Vacation Brain! ') === 'vacation-brain', 'slug normalization');
 expect(scanner_clean_name("  Vacation   Brain  ") === 'Vacation Brain', 'name normalization');
 expect(scanner_local_landing('', 'vacation-brain') === '/scanner/brand.php?slug=vacation-brain', 'default in-app landing path');
 expect(scanner_local_landing('/index.html', 'vacation-brain') === '/index.html', 'explicit local landing path');
+expect(scanner_local_landing('brand.php?slug=vacation-brain', 'vacation-brain') === '/brand.php?slug=vacation-brain', 'relative path normalization');
+expect(scanner_local_landing('https://brain.example.com/brands/vacation-brain?ref=scan#top', 'vacation-brain') === '/brands/vacation-brain?ref=scan#top', 'same-site absolute URL normalization');
 
 $rejectedExternal = false;
 try {
@@ -34,5 +37,13 @@ try {
     $rejectedTraversal = true;
 }
 expect($rejectedTraversal, 'parent traversal rejection');
+
+$rejectedEncodedTraversal = false;
+try {
+    scanner_local_landing('/brands/%2e%2e/admin.php', 'vacation-brain');
+} catch (InvalidArgumentException) {
+    $rejectedEncodedTraversal = true;
+}
+expect($rejectedEncodedTraversal, 'encoded parent traversal rejection');
 
 echo "Scanner smoke tests passed.\n";
